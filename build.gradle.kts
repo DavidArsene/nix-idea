@@ -1,6 +1,5 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -20,23 +19,22 @@ val pluginName: String by project
 val pluginVersion: String by project
 val pluginSinceBuild: String by project
 
-val platformType: String by project
-val platformVersion: String by project
-
 group = pluginGroup
 version = pluginVersion
+
+val localappdata = providers.environmentVariable("LOCALAPPDATA").get()
 
 java {
     // Don't use Gradle's toolchain feature as it prevents building the project with more recent JDKs. Related issues:
     // https://github.com/gradle/gradle/issues/16256 - Ability to set a min language version for a toolchain
     // https://github.com/gradle/gradle/issues/17444 - Toolchains feature does not appear to treat Java as backwards compatible
     // https://github.com/gradle/gradle/issues/18894 - More flexibility in querying Java toolchains
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 
@@ -58,8 +56,9 @@ dependencies {
     testRuntimeOnly(libs.junit5.vintage.engine)
 
     intellijPlatform {
-        create(platformType, platformVersion)
+        local("$localappdata\\Programs\\IntelliJ IDEA")
         testFramework(TestFrameworkType.Platform)
+        bundledModule("intellij.spellchecker")
         //testFramework(TestFrameworkType.JUnit5)
     }
 }
@@ -107,17 +106,17 @@ intellijPlatform {
     pluginVerification {
         freeArgs = listOf("-mute", "TemplateWordInPluginName")
         ides {
-            ides(
-                providers.gradleProperty("verifierIdeVersionOverride")
-                    // Verify only against the IDE specified by the property
-                    .map { listOf(it) }
-                    // If property is not set, verify against the IDEs in gradle/productsReleases.txt
-                    .orElse(
-                        layout.projectDirectory.file("gradle/productsReleases.txt")
-                            .let { providers.fileContents(it).asText }
-                            .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
-                    )
-            )
+//            ides(
+//                providers.gradleProperty("verifierIdeVersionOverride")
+//                    // Verify only against the IDE specified by the property
+//                    .map { listOf(it) }
+//                    // If property is not set, verify against the IDEs in gradle/productsReleases.txt
+//                    .orElse(
+//                        layout.projectDirectory.file("gradle/productsReleases.txt")
+//                            .let { providers.fileContents(it).asText }
+//                            .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
+//                    )
+//            )
         }
     }
     publishing {
@@ -129,7 +128,7 @@ intellijPlatform {
 }
 
 changelog {
-    repositoryUrl = "https://github.com/NixOS/nix-idea"
+    repositoryUrl = "https://github.com/DavidArsene/nix-idea"
     lineSeparator = "\n"
     // Workarounds because our version numbers do not match the format of semantic versioning:
     headerParserRegex = "^[-._+0-9a-zA-Z]+\$"
@@ -143,7 +142,7 @@ grammarKit {
 
     // tag or short commit hash of Grammar-Kit to use
     // -> https://github.com/JetBrains/Grammar-Kit
-    grammarKitRelease = "2023.3"
+    grammarKitRelease = "2023.3.1"
 }
 
 val lexerSource = layout.buildDirectory.dir("generated/sources/lexer/java/main")
@@ -158,8 +157,8 @@ sourceSets {
 
 tasks {
 
-    val runIntellij by intellijPlatformTesting.runIde.registering {
-        type = IntelliJPlatformType.IntellijIdeaCommunity
+    intellijPlatformTesting {
+        runIde
     }
 
     withType<JavaCompile> {
