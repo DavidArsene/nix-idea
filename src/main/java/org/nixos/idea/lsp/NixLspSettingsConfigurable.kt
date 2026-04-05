@@ -11,7 +11,6 @@ import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.selected
-import org.nixos.idea.settings.ui.CommandSuggestionsPopup
 import org.nixos.idea.settings.ui.UiDslExtensions.bindText
 import org.nixos.idea.settings.ui.UiDslExtensions.placeholderText
 import org.nixos.idea.settings.ui.UiDslExtensions.suggestionsPopup

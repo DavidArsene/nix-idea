@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.toArray
 import org.nixos.idea.psi.NixBindAttr
-import org.nixos.idea.psi.NixElementType
 import org.nixos.idea.psi.NixElementVisitor
 import org.nixos.idea.psi.NixExprApp
 import org.nixos.idea.psi.NixExprAssert
@@ -28,7 +27,7 @@ import org.nixos.idea.psi.NixFormals
 import org.nixos.idea.psi.NixIndString
 import org.nixos.idea.psi.NixTypes
 
-class NixFoldingBuilder : FoldingBuilderEx() {
+internal class NixFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = mutableListOf<FoldingDescriptor>()
 
@@ -120,16 +119,14 @@ class NixFoldingBuilder : FoldingBuilderEx() {
 
     override fun getPlaceholderText(node: ASTNode): String? =
         when (node.elementType) {
-            NixTypes.EXPR_PARENS -> "(...)";
-            NixTypes.MCOMMENT -> "/* ... */";
-            NixTypes.EXPR_ATTRS -> "{ ... }";
-            NixTypes.EXPR_LIST -> "[ ... ]";
-            NixTypes.IND_STRING -> "'' ... ''";
-            NixTypes.FORMALS -> "{ ... }";
+            NixTypes.EXPR_PARENS -> "(...)"
+            NixTypes.MCOMMENT -> "/* ... */"
+            NixTypes.EXPR_ATTRS -> "{ ... }"
+            NixTypes.EXPR_LIST -> "[ ... ]"
+            NixTypes.IND_STRING -> "'' ... ''"
+            NixTypes.FORMALS -> "{ ... }"
             else -> null
         }
 
-    override fun isCollapsedByDefault(node: ASTNode): Boolean {
-        return false
-    }
+    override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 }

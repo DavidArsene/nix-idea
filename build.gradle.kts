@@ -22,19 +22,17 @@ val pluginSinceBuild: String by project
 group = pluginGroup
 version = pluginVersion
 
-val localappdata = providers.environmentVariable("LOCALAPPDATA").get()
-
 java {
     // Don't use Gradle's toolchain feature as it prevents building the project with more recent JDKs. Related issues:
     // https://github.com/gradle/gradle/issues/16256 - Ability to set a min language version for a toolchain
     // https://github.com/gradle/gradle/issues/17444 - Toolchains feature does not appear to treat Java as backwards compatible
     // https://github.com/gradle/gradle/issues/18894 - More flexibility in querying Java toolchains
-    sourceCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -56,7 +54,7 @@ dependencies {
     testRuntimeOnly(libs.junit5.vintage.engine)
 
     intellijPlatform {
-        local("$localappdata\\Programs\\IntelliJ IDEA")
+        local("/nix/store/b79pnbhcfkfxqzlznd4wkiba4q2y9hap-idea-unwrapped-2026.1/")
         testFramework(TestFrameworkType.Platform)
         bundledModule("intellij.spellchecker")
         //testFramework(TestFrameworkType.JUnit5)
@@ -72,7 +70,7 @@ intellijPlatform {
         name = "NixIDEA"
         version = pluginVersion
         vendor {
-            name = "NixOS"
+            name = "NixOS && David"
         }
         ideaVersion {
             sinceBuild = pluginSinceBuild

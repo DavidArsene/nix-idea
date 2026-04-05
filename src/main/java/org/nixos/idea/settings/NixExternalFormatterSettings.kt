@@ -15,23 +15,21 @@ import java.util.Deque
     name = "NixExternalFormatterSettings",
     storages = [Storage(value = NixStoragePaths.TOOLS, roamingType = RoamingType.LOCAL)]
 )
-class NixExternalFormatterSettings : SimplePersistentStateComponent<NixExternalFormatterSettings.State>(State()) {
+class NixExternalFormatterSettings : SimplePersistentStateComponent<NixExternalFormatterSettings.NixState>(NixState()) {
 
-    class State : BaseState() {
+    class NixState : BaseState() {
         var enabled by property(false)
         var command by string()
         var history: Deque<String> by property(ArrayDeque(), { it.isEmpty() })
     }
 
-    var isFormatEnabled: Boolean by delegate(State::enabled)
-    var formatCommand: String by delegate(State::command, State::history)
+    var isFormatEnabled: Boolean by delegate(NixState::enabled)
+    var formatCommand: String by delegate(NixState::command, NixState::history)
     val commandHistory: Collection<String>
         get() = Collections.unmodifiableCollection(state.history)
 
     companion object {
         @JvmStatic
-        fun getInstance(): NixExternalFormatterSettings {
-            return ApplicationManager.getApplication().getService(NixExternalFormatterSettings::class.java)
-        }
+        fun getInstance() = ApplicationManager.getApplication().getService(NixExternalFormatterSettings::class.java)!!
     }
 }

@@ -1,20 +1,44 @@
-package org.nixos.idea.lang.builtins;
+package org.nixos.idea.lang.builtins
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.nixos.idea.util.NixVersion;
+import org.nixos.idea.util.NixVersion
 
-import java.util.Map;
-import java.util.Set;
+class NixBuiltin private constructor(
+    //region Instance members
+    val name: String,
+    val since: NixVersion?,
+    val featureFlag: String?,
+     val featureFlagIntegration: NixVersion?,
+    val highlightingType: HighlightingType
+) {
+    private val global: Boolean = GLOBAL_SCOPE.contains(name)
 
-public final class NixBuiltin {
-    //region Constants
+    //endregion
+    //region Inner classes
+    enum class HighlightingType {
+        /**
+         * Builtins which are casually described as literals.
+         * Specifically, only “`true`”, “`null`”, and “`false` have this type”.
+         */
+        LITERAL,
 
-    /**
-     * List of builtins which are available in the global scope (i.e. without “builtins.” prefix).
-     * To verify this list against your installation, start {@code nix repl} and press <kbd>Tab</kbd>.
-     */
-    private static final Set<String> GLOBAL_SCOPE = Set.of(
+        /**
+         * Import function.
+         */
+        IMPORT,
+
+        /**
+         * Any other builtin which does not match any of the other types.
+         */
+        OTHER,
+    } //endregion
+
+    companion object {
+        //region Constants
+        /**
+         * List of builtins which are available in the global scope (i.e. without “builtins.” prefix).
+         * To verify this list against your installation, start `nix repl` and press <kbd>Tab</kbd>.
+         */
+        private val GLOBAL_SCOPE = setOf(
             "false",
             "null",
             "true",
@@ -37,17 +61,18 @@ public final class NixBuiltin {
             "removeAttrs",
             "scopedImport",
             "throw",
-            "toString");
+            "toString"
+        )
 
-    /**
-     * List of all builtins. To verify this list against your installation, start {@code nix repl},
-     * type {@code builtins.}, and press <kbd>Tab</kbd>.
-     */
-    private static final Map<String, NixBuiltin> BUILTINS = Map.ofEntries(
-            builtin("false", HighlightingType.LITERAL),
-            builtin("null", HighlightingType.LITERAL),
-            builtin("true", HighlightingType.LITERAL),
-            builtin("import", HighlightingType.IMPORT),
+        /**
+         * List of all builtins. To verify this list against your installation, start `nix repl`,
+         * type `builtins.`, and press <kbd>Tab</kbd>.
+         */
+        private val BUILTINS = mapOf(
+            builtin("false", highlightingType = HighlightingType.LITERAL),
+            builtin("null", highlightingType = HighlightingType.LITERAL),
+            builtin("true", highlightingType = HighlightingType.LITERAL),
+            builtin("import", highlightingType = HighlightingType.IMPORT),
             builtin("abort"),
             builtin("add"),
             builtin("addErrorContext"),
@@ -156,88 +181,30 @@ public final class NixBuiltin {
             builtin("unsafeDiscardOutputDependency"),
             builtin("unsafeDiscardStringContext"),
             builtin("unsafeGetAttrPos"),
-            builtin("zipAttrsWith", NixVersion.V2_06));
+            builtin("zipAttrsWith", NixVersion.V2_06)
+        )
 
-    //endregion
-    //region Factories
+        //endregion
+        //region Factories
 
-    private static @NotNull Map.Entry<String, NixBuiltin> builtin(@NotNull String name) {
-        return Map.entry(name, new NixBuiltin(name, null, null, null, HighlightingType.OTHER));
+        private fun builtin(
+            name: String,
+            since: NixVersion? = null,
+            featureFlag: String? = null,
+            highlightingType: HighlightingType = HighlightingType.OTHER,
+        ) =
+            name to NixBuiltin(name, since, featureFlag, null, highlightingType)
+
+
+        //endregion
+        //region Static members
+        @JvmStatic
+        fun resolveBuiltin(name: String): NixBuiltin? = BUILTINS[name]
+
+        @JvmStatic
+        fun resolveGlobal(name: String): NixBuiltin? {
+            val builtin = resolveBuiltin(name)
+            return if (builtin?.global == true) builtin else null
+        }
     }
-
-    private static @NotNull Map.Entry<String, NixBuiltin> builtin(@NotNull String name, @NotNull HighlightingType highlightingType) {
-        return Map.entry(name, new NixBuiltin(name, null, null, null, highlightingType));
-    }
-
-    private static @NotNull Map.Entry<String, NixBuiltin> builtin(@NotNull String name, @NotNull NixVersion since) {
-        return Map.entry(name, new NixBuiltin(name, since, null, null, HighlightingType.OTHER));
-    }
-
-    private static @NotNull Map.Entry<String, NixBuiltin> builtin(@NotNull String name, @NotNull NixVersion since, @NotNull String featureFlag) {
-        return Map.entry(name, new NixBuiltin(name, since, featureFlag, null, HighlightingType.OTHER));
-    }
-
-    //endregion
-    //region Instance members
-
-    private final @NotNull String name;
-    private final @Nullable NixVersion since;
-    private final @Nullable String featureFlag;
-    private final @Nullable NixVersion featureFlagIntegration;
-    private final @NotNull HighlightingType highlightingType;
-    private final boolean global;
-
-    private NixBuiltin(@NotNull String name,
-                       @Nullable NixVersion since,
-                       @Nullable String featureFlag,
-                       @Nullable NixVersion featureFlagIntegration,
-                       @NotNull HighlightingType highlightingType) {
-        this.name = name;
-        this.since = since;
-        this.featureFlag = featureFlag;
-        this.featureFlagIntegration = featureFlagIntegration;
-        this.highlightingType = highlightingType;
-        this.global = GLOBAL_SCOPE.contains(name);
-    }
-
-    public @NotNull String name() {
-        return name;
-    }
-
-    public @NotNull HighlightingType highlightingType() {
-        return highlightingType;
-    }
-
-    //endregion
-    //region Static members
-
-    public static @Nullable NixBuiltin resolveBuiltin(@NotNull String name) {
-        return BUILTINS.get(name);
-    }
-
-    public static @Nullable NixBuiltin resolveGlobal(@NotNull String name) {
-        NixBuiltin builtin = BUILTINS.get(name);
-        return builtin != null && builtin.global ? builtin : null;
-    }
-
-    //endregion
-    //region Inner classes
-
-    public enum HighlightingType {
-        /**
-         * Builtins which are casually described as literals.
-         * Specifically, only “{@code true}”, “{@code null}”, and “{@code false} have this type”.
-         */
-        LITERAL,
-        /**
-         * Import function.
-         */
-        IMPORT,
-        /**
-         * Any other builtin which does not match any of the other types.
-         */
-        OTHER,
-    }
-
-    //endregion
 }

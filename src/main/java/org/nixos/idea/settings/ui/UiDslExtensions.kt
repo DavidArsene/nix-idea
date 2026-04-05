@@ -9,7 +9,6 @@ import com.intellij.ui.TextAccessor
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.MutableProperty
 import com.intellij.ui.dsl.builder.toMutableProperty
-import org.nixos.idea.settings.ui.CommandSuggestionsPopup.Suggestion
 import javax.swing.JComponent
 import kotlin.reflect.KMutableProperty0
 
@@ -42,7 +41,7 @@ object UiDslExtensions {
     }
 
     fun <T : RawCommandLineEditor> Cell<T>.placeholderText(@NlsContexts.StatusText text: String): Cell<T> {
-        component.editorField.emptyText.setText(text)
+        component.editorField.emptyText.text = text
         component.editorField.accessibleContext.accessibleName = text
         return this
     }

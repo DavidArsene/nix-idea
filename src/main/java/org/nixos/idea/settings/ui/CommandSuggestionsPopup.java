@@ -195,7 +195,7 @@ public final class CommandSuggestionsPopup {
         @Override
         public @Nullable PopupStep<?> onChosen(Suggestion selectedValue, boolean finalChoice) {
             myEditor.setText(selectedValue.command());
-            return FINAL_CHOICE;
+            return PopupStep.FINAL_CHOICE;
         }
     }
 }
