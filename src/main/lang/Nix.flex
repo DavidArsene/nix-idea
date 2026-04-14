@@ -164,6 +164,7 @@ MCOMMENT=\/\*([^*]|\*[^\/])*\*\/
   "&&"                  { return AND; }
   "||"                  { return OR; }
   "->"                  { return IMPL; }
+  "|>"                  { return PIPE; }
 
   \"                    { pushState(STRING); return STRING_OPEN; }
   \'\'                  { pushState(IND_STRING_START); return IND_STRING_OPEN; }
