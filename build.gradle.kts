@@ -1,5 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -18,6 +19,9 @@ val pluginGroup: String by project
 val pluginName: String by project
 val pluginVersion: String by project
 val pluginSinceBuild: String by project
+
+val platformType: String by project
+val platformVersion: String by project
 
 group = pluginGroup
 version = pluginVersion
@@ -54,10 +58,18 @@ dependencies {
     testRuntimeOnly(libs.junit5.vintage.engine)
 
     intellijPlatform {
+        // create(platformType, platformVersion)
         local("/nix/store/b79pnbhcfkfxqzlznd4wkiba4q2y9hap-idea-unwrapped-2026.1/")
-        testFramework(TestFrameworkType.Platform)
         bundledModule("intellij.spellchecker")
+        testFramework(TestFrameworkType.Platform)
         //testFramework(TestFrameworkType.JUnit5)
+
+        // version of IntelliJ patched JFlex
+        // -> https://github.com/JetBrains/intellij-deps-jflex
+        jflex("1.9.2")
+        // tag or short commit hash of Grammar-Kit to use
+        // -> https://github.com/JetBrains/Grammar-Kit
+        grammarKit("2023.3")
     }
 }
 
@@ -70,7 +82,7 @@ intellijPlatform {
         name = "NixIDEA"
         version = pluginVersion
         vendor {
-            name = "NixOS && David"
+            name = "NixOS ++ [ David ]"
         }
         ideaVersion {
             sinceBuild = pluginSinceBuild
@@ -104,17 +116,17 @@ intellijPlatform {
     pluginVerification {
         freeArgs = listOf("-mute", "TemplateWordInPluginName")
         ides {
-//            ides(
-//                providers.gradleProperty("verifierIdeVersionOverride")
-//                    // Verify only against the IDE specified by the property
-//                    .map { listOf(it) }
-//                    // If property is not set, verify against the IDEs in gradle/productsReleases.txt
-//                    .orElse(
-//                        layout.projectDirectory.file("gradle/productsReleases.txt")
-//                            .let { providers.fileContents(it).asText }
-//                            .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
-//                    )
-//            )
+            create(
+                providers.gradleProperty("verifierIdeVersionOverride")
+                    // Verify only against the IDE specified by the property
+                    .map { listOf(it) }
+                    // If property is not set, verify against the IDEs in gradle/productsReleases.txt
+                    .orElse(
+                        layout.projectDirectory.file("gradle/productsReleases.txt")
+                            .let { providers.fileContents(it).asText }
+                            .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
+                    )
+            )
         }
     }
     publishing {
@@ -133,16 +145,6 @@ changelog {
     combinePreReleases = false
 }
 
-grammarKit {
-    // version of IntelliJ patched JFlex
-    // -> https://github.com/JetBrains/intellij-deps-jflex
-    jflexRelease = "1.9.2"
-
-    // tag or short commit hash of Grammar-Kit to use
-    // -> https://github.com/JetBrains/Grammar-Kit
-    grammarKitRelease = "2023.3.1"
-}
-
 val lexerSource = layout.buildDirectory.dir("generated/sources/lexer/java/main")
 sourceSets {
     main {
@@ -155,8 +157,8 @@ sourceSets {
 
 tasks {
 
-    intellijPlatformTesting {
-        runIde
+    val runIntellij by intellijPlatformTesting.runIde.registering {
+        type = IntelliJPlatformType.IntellijIdeaCommunity
     }
 
     withType<JavaCompile> {

@@ -4,11 +4,15 @@
 
 ### Added
 
+- Language Server support using IDEA's LSP API now available without ultimate subscription
+
 ### Changed
 
 ### Deprecated
 
 ### Removed
+
+- Support for IDEA 2025.1 and previous versions
 
 ### Fixed
 
