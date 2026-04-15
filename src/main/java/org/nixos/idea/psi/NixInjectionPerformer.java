@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NixInjectionPerformer implements LanguageInjectionPerformer {
+final class NixInjectionPerformer implements LanguageInjectionPerformer {
 
     @Override
     public boolean isPrimary() {

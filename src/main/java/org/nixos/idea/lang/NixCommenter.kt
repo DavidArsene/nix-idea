@@ -2,7 +2,7 @@ package org.nixos.idea.lang
 
 import com.intellij.codeInsight.generation.IndentedCommenter
 
-class NixCommenter : IndentedCommenter {
+internal class NixCommenter : IndentedCommenter {
     override fun getLineCommentPrefix(): String = "#"
 
     override fun getBlockCommentPrefix(): String = "/*"

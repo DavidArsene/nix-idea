@@ -15,8 +15,9 @@ import org.nixos.idea.file.NixFile
 import org.nixos.idea.psi.NixTokenSets
 import org.nixos.idea.psi.NixTokenType
 import org.nixos.idea.psi.NixTypes
+import org.nixos.idea.psi.NixTypes.*
 
-class NixParserDefinition : ParserDefinition {
+internal class NixParserDefinition : ParserDefinition {
     override fun createLexer(project: Project?): Lexer = NixLexer()
 
     override fun getWhitespaceTokens(): TokenSet = NixTokenSets.WHITE_SPACES
@@ -35,26 +36,25 @@ class NixParserDefinition : ParserDefinition {
         val leftType: NixTokenType? = left.elementType as? NixTokenType
         val rightType: NixTokenType? = right.elementType as? NixTokenType
 
-        return when {
-            leftType === NixTypes.SCOMMENT -> SpaceRequirements.MUST_LINE_BREAK
+        return when (leftType) {
+            SCOMMENT -> SpaceRequirements.MUST_LINE_BREAK
 
-            leftType === NixTypes.DOLLAR && rightType === NixTypes.LCURLY -> SpaceRequirements.MUST_NOT
+            DOLLAR if rightType === LCURLY -> SpaceRequirements.MUST_NOT
 
             // path segment, antiquotation or PATH_END on the right
-            leftType === NixTypes.PATH_SEGMENT -> SpaceRequirements.MUST_NOT
+            PATH_SEGMENT -> SpaceRequirements.MUST_NOT
+
+            in NixTokenSets.MIGHT_COLLAPSE_WITH_ID if rightType in NixTokenSets.MIGHT_COLLAPSE_WITH_ID
+                -> SpaceRequirements.MUST
 
             // path segment or antiquotation on the left
-            rightType === NixTypes.PATH_END -> SpaceRequirements.MUST_NOT
-
-            NixTokenSets.MIGHT_COLLAPSE_WITH_ID.contains(leftType) &&
-                    NixTokenSets.MIGHT_COLLAPSE_WITH_ID.contains(rightType)
-                -> SpaceRequirements.MUST
+            leftType if rightType === PATH_END -> SpaceRequirements.MUST_NOT
 
             else -> SpaceRequirements.MAY
         }
     }
 
-    override fun createElement(node: ASTNode): PsiElement = NixTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode): PsiElement = Factory.createElement(node)
 
 }
 

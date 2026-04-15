@@ -11,7 +11,7 @@ import org.nixos.idea.psi.NixExprList
 import org.nixos.idea.psi.NixFormals
 import org.nixos.idea.psi.NixPsiUtil
 
-class NixMoveElementLeftRightHandler : MoveElementLeftRightHandler() {
+internal class NixMoveElementLeftRightHandler : MoveElementLeftRightHandler() {
     override fun getMovableSubElements(element: PsiElement): Array<PsiElement?> = when (element) {
         is NixExprList -> element.getItems().toTypedArray()
 

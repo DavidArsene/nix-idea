@@ -3,7 +3,7 @@ package org.nixos.idea.psi
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.AbstractElementManipulator
 
-class NixStringManipulator : AbstractElementManipulator<NixStringText>() {
+internal class NixStringManipulator : AbstractElementManipulator<NixStringText>() {
 
     /**
      * This function's result changes the original text in the host language

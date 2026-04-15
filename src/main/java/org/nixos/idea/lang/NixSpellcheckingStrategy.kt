@@ -11,12 +11,13 @@ import org.nixos.idea.psi.NixStringText
 
 /**
  * Enables spell checking for Nix files.
- * 
+ *
  * @see [Spell Checking Documentation](https://plugins.jetbrains.com/docs/intellij/spell-checking.html)
- * 
+ *
  * @see [Spell Checking Tutorial](https://plugins.jetbrains.com/docs/intellij/spell-checking-strategy.html)
  */
-class NixSpellcheckingStrategy : SpellcheckingStrategy() {
+internal class NixSpellcheckingStrategy : SpellcheckingStrategy() {
+
     override fun getTokenizer(element: PsiElement?): Tokenizer<*> = when (element) {
 
         is NixIdentifier if NixPsiUtil.isDeclaration(element) -> IDENTIFIER_TOKENIZER
@@ -30,5 +31,4 @@ class NixSpellcheckingStrategy : SpellcheckingStrategy() {
 // TODO: Implement SuppressibleSpellcheckingStrategy
 //  https://plugins.jetbrains.com/docs/intellij/spell-checking.html#suppressing-spellchecking
 // TODO: Suggest rename-refactoring for identifiers (when rename refactoring is supported)
-private val IDENTIFIER_TOKENIZER: Tokenizer<NixIdentifier?> =
-    TokenizerBase.create<NixIdentifier?>(IdentifierSplitter.getInstance())
+private val IDENTIFIER_TOKENIZER: Tokenizer<NixIdentifier> = TokenizerBase.create(IdentifierSplitter.getInstance())

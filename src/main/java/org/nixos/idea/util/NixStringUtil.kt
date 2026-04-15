@@ -153,7 +153,7 @@ object NixStringUtil {
                         NixTypes.IND_STR_INDENT -> preliminary = min(result, token.textLength)
                         NixTypes.IND_STR_LF -> preliminary = 0
                         NixTypes.IND_STR, NixTypes.IND_STR_ESCAPE -> result = preliminary
-                        else -> throw IllegalStateException(token.elementType.debugName)
+                        else -> throw IllegalStateException(token.elementType.toString())
                     }
                     token = token.treeNext
                 }

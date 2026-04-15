@@ -17,7 +17,7 @@ import com.intellij.psi.PsiReferenceRegistrar
 import com.intellij.util.ProcessingContext
 import org.nixos.idea.psi.impl.NixExprStdPathMixin
 
-class NixFilePathReferenceContributor: PsiReferenceContributor() {
+internal class NixFilePathReferenceContributor: PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
             PlatformPatterns.psiElement(NixExprStdPathMixin::class.java),

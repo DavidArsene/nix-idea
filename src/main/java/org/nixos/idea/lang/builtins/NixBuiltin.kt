@@ -3,17 +3,15 @@ package org.nixos.idea.lang.builtins
 import org.nixos.idea.util.NixVersion
 
 class NixBuiltin private constructor(
-    //region Instance members
+
     val name: String,
     val since: NixVersion?,
     val featureFlag: String?,
-     val featureFlagIntegration: NixVersion?,
+    val featureFlagIntegration: NixVersion?,
     val highlightingType: HighlightingType
 ) {
     private val global: Boolean = GLOBAL_SCOPE.contains(name)
 
-    //endregion
-    //region Inner classes
     enum class HighlightingType {
         /**
          * Builtins which are casually described as literals.
@@ -30,10 +28,9 @@ class NixBuiltin private constructor(
          * Any other builtin which does not match any of the other types.
          */
         OTHER,
-    } //endregion
+    }
 
     companion object {
-        //region Constants
         /**
          * List of builtins which are available in the global scope (i.e. without “builtins.” prefix).
          * To verify this list against your installation, start `nix repl` and press <kbd>Tab</kbd>.
@@ -184,9 +181,6 @@ class NixBuiltin private constructor(
             builtin("zipAttrsWith", NixVersion.V2_06)
         )
 
-        //endregion
-        //region Factories
-
         private fun builtin(
             name: String,
             since: NixVersion? = null,
@@ -196,8 +190,6 @@ class NixBuiltin private constructor(
             name to NixBuiltin(name, since, featureFlag, null, highlightingType)
 
 
-        //endregion
-        //region Static members
         @JvmStatic
         fun resolveBuiltin(name: String): NixBuiltin? = BUILTINS[name]
 

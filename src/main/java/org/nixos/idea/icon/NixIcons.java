@@ -4,7 +4,7 @@ import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
-public class NixIcons {
+public final class NixIcons {
 
     // Documentation
     // -> https://plugins.jetbrains.com/docs/intellij/icons.html

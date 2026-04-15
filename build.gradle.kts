@@ -82,7 +82,7 @@ intellijPlatform {
         name = "NixIDEA"
         version = pluginVersion
         vendor {
-            name = "NixOS ++ [ David ]"
+            name = "NixOS ++ David"
         }
         ideaVersion {
             sinceBuild = pluginSinceBuild
@@ -114,21 +114,22 @@ intellijPlatform {
         }
     }
     pluginVerification {
+        // TODO: verifyPluginProjectConfigurationMutedMessages
         freeArgs = listOf("-mute", "TemplateWordInPluginName")
         ides {
-            create(
-                providers.gradleProperty("verifierIdeVersionOverride")
-                    // Verify only against the IDE specified by the property
-                    .map { listOf(it) }
-                    // If property is not set, verify against the IDEs in gradle/productsReleases.txt
-                    .orElse(
-                        layout.projectDirectory.file("gradle/productsReleases.txt")
-                            .let { providers.fileContents(it).asText }
-                            .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
-                    )
-            )
+            providers.gradleProperty("verifierIdeVersionOverride")
+                // Verify only against the IDE specified by the property
+                .map { listOf(it) }
+                // If property is not set, verify against the IDEs in gradle/productsReleases.txt
+                .orElse(
+                    layout.projectDirectory.file("gradle/productsReleases.txt")
+                        .let { providers.fileContents(it).asText }
+                        .map { it.lines().map(String::trim).filter(String::isNotEmpty) }
+                )
         }
     }
+    instrumentCode = false
+
     publishing {
         token = providers.environmentVariable("JETBRAINS_TOKEN")
         // Note: `listOf("foo").first()` does not what you think on Java 21 and Gradle 8.6. (The return type is TaskProvider<Task>)

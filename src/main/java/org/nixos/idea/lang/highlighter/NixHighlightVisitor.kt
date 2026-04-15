@@ -9,13 +9,13 @@ import com.intellij.psi.PsiFile
 import kotlin.reflect.jvm.javaField
 
 
-class NixHighlightVisitor : HighlightVisitor {
-    private lateinit var myHolder: HighlightInfoHolder
-    private lateinit var myDelegate: Delegate
+internal class NixHighlightVisitor : HighlightVisitor {
+    private var myHolder: HighlightInfoHolder? = null
+    private var myDelegate: Delegate? = null
 
     override fun suitableForFile(file: PsiFile) = NixHighlightVisitorDelegate.suitableForFile(file)
 
-    override fun visit(element: PsiElement) = myDelegate.visit(element)
+    override fun visit(element: PsiElement) = myDelegate!!.visit(element)
 
     override fun analyze(
         file: PsiFile,
@@ -28,21 +28,20 @@ class NixHighlightVisitor : HighlightVisitor {
             myDelegate = Delegate()
             action.run()
         } finally {
-//            myHolder = null
-//            myDelegate = null
-            ::myHolder.javaField!!.set(this, null)
-            ::myDelegate.javaField!!.set(this, null)
-
+            myHolder = null
+            myDelegate = null
+            // ::myHolder.javaField!!.set(this, null)
+            // ::myDelegate.javaField!!.set(this, null)
         }
         return true
     }
 
-override fun clone() = NixHighlightVisitor()
+    override fun clone() = NixHighlightVisitor()
 
     private inner class Delegate : NixHighlightVisitorDelegate() {
         override fun highlight(element: PsiElement, source: PsiElement?, attrPath: String, type: HighlightInfoType?) {
             if (type != null) {
-                myHolder.add(
+                myHolder!!.add(
                     HighlightInfo.newHighlightInfo(type)
                         .range(element)
                         .create()

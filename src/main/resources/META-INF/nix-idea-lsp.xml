@@ -1,17 +1,13 @@
 <idea-plugin>
-    <extensions defaultExtensionNs="com.intellij">
+	<extensions defaultExtensionNs="com.intellij">
 
-        <applicationService
-                serviceImplementation="org.nixos.idea.lsp.NixLspSettings"/>
+		<!-- <applicationService serviceImplementation="org.nixos.idea.lsp.NixLspSettings" /> -->
 
-        <applicationConfigurable
-                parentId="org.nixos.idea.settings.ui.NixLangSettingsConfigurable"
-                displayName="Language Server (LSP)"
-                id="org.nixos.idea.lsp.NixLspSettingsConfigurable"
-                instance="org.nixos.idea.lsp.NixLspSettingsConfigurable"/>
+		<!-- <applicationConfigurable displayName="Language Server (LSP)" -->
+		<!-- 	id="org.nixos.idea.lsp.NixLspSettingsConfigurable" instance="org.nixos.idea.lsp.NixLspSettingsConfigurable" -->
+		<!-- 	parentId="org.nixos.idea.settings.ui.NixLangSettingsConfigurable" /> -->
 
-        <platform.lsp.serverSupportProvider
-                implementation="org.nixos.idea.lsp.NixLspServerSupportProvider"/>
+		<platform.lsp.serverSupportProvider implementation="org.nixos.idea.lsp.NixLspServerSupportProvider" />
 
-    </extensions>
+	</extensions>
 </idea-plugin>

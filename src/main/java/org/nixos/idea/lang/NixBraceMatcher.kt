@@ -6,12 +6,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import org.nixos.idea.psi.NixTypes
 
-class NixBraceMatcher : PairedBraceMatcher {
+internal class NixBraceMatcher : PairedBraceMatcher {
     override fun getPairs(): Array<BracePair> = PAIRS
 
-    override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean {
-        return true
-    }
+    override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?) = true
 
     override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int): Int {
         val openingBrace = file.findElementAt(openingBraceOffset)

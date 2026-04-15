@@ -12,13 +12,12 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
 import com.intellij.util.execution.ParametersListUtil
 import org.nixos.idea.file.NixFile
-import org.nixos.idea.settings.NixExternalFormatterSettings.Companion.getInstance
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.EnumSet
 
-class NixExternalFormatter : AsyncDocumentFormattingService() {
+internal class NixExternalFormatter : AsyncDocumentFormattingService() {
     override fun getNotificationGroupId(): String = name
 
     @NlsSafe
@@ -29,14 +28,14 @@ class NixExternalFormatter : AsyncDocumentFormattingService() {
     override fun canFormat(psiFile: PsiFile): Boolean = psiFile is NixFile
 
     override fun createFormattingTask(request: AsyncFormattingRequest): FormattingTask? {
-        val nixSettings = getInstance()
-        if (!nixSettings.isFormatEnabled) {
-            return null
-        }
+//        val nixSettings = getInstance()
+//        if (!nixSettings.isFormatEnabled) {
+//            return null
+//        }
 
         val ioFile = request.ioFile ?: return null
 
-        val command = nixSettings.formatCommand
+        val command = "nixfmt" // nixSettings.formatCommand
         val argv = ParametersListUtil.parse(command, false, true)
         val commandLine = GeneralCommandLine(argv)
 
