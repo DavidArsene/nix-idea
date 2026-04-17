@@ -326,7 +326,7 @@ public final class Markers extends AbstractCollection<Markers.Marker> {
         } else if (myMarkers.size() > 1) {
             throw new IllegalStateException("Multiple markers: " + myMarkers);
         } else {
-            return Optional.of(myMarkers.get(0));
+            return Optional.of(myMarkers.getFirst());
         }
     }
 
@@ -407,7 +407,7 @@ public final class Markers extends AbstractCollection<Markers.Marker> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Markers markers = (Markers) o;
-        return Objects.equals(myText, markers.myText) && Objects.equals(myMarkers, markers.myMarkers);
+        return myText.equals(markers.myText) && myMarkers.equals(markers.myMarkers);
     }
 
     @Override
@@ -509,7 +509,7 @@ public final class Markers extends AbstractCollection<Markers.Marker> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Marker marker = (Marker) o;
-            return myStart == marker.myStart && myEnd == marker.myEnd && Objects.equals(myTagName, marker.myTagName);
+            return myStart == marker.myStart && myEnd == marker.myEnd && myTagName.equals(marker.myTagName);
         }
 
         @Override

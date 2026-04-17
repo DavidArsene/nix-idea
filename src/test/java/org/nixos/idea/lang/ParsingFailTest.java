@@ -95,7 +95,7 @@ public final class ParsingFailTest extends ParsingTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    // Test environment of ParsingTestCase does not detect the brace matcher on its own. The brace matcher effects the
+    // Test environment of ParsingTestCase does not detect the brace matcher on its own. The brace matcher affects the
     // error recovery of Grammar-Kit and must therefore be registered to get correct test results.
     addExplicitExtension(LanguageBraceMatching.INSTANCE, NixLanguage.INSTANCE, new NixBraceMatcher());
   }

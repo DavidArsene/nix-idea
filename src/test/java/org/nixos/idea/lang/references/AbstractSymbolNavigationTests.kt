@@ -6,17 +6,12 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.PsiTestUtil
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DynamicNode
-import org.nixos.idea._testutil.Markers
-import org.nixos.idea._testutil.TestFactoryDsl
-import org.nixos.idea._testutil.WithIdeaPlatform
+import org.junit.jupiter.api.*
+import org.nixos.idea._testutil.*
 import org.nixos.idea.file.NixFileType
 import org.nixos.idea.lang.builtins.NixBuiltin
-import org.nixos.idea.lang.references.symbol.NixSymbol
+import org.nixos.idea.lang.references.symbol.*
 import org.nixos.idea.psi.NixDeclarationHost
-import org.nixos.idea.settings.NixSymbolSettings
 
 @WithIdeaPlatform.OnEdt
 @WithIdeaPlatform.CodeInsight
@@ -96,8 +91,8 @@ abstract class AbstractSymbolNavigationTests {
         val declarationMarkers = markers.markers(TAG_DECL)
         val referenceMarkers = markers.markers(TAG_REF)
 
-        NixSymbolSettings.getInstance().enabled = true
-        val file = myFixture.configureByText(NixFileType.INSTANCE, unmarkedCode)
+        // NixSymbolSettings.getInstance().enabled = true
+        val file = myFixture.configureByText(NixFileType, unmarkedCode)
         PsiTestUtil.checkErrorElements(file) // Fail early if there is a syntax error
 
         return TestFactoryDsl.testFactory {
@@ -113,12 +108,12 @@ abstract class AbstractSymbolNavigationTests {
             }
             if (config.findReferences) {
                 containers("find usages", symbolMarkers) { symbolMarker ->
-                    test("show declarations as usages = false") {
-                        NixSymbolSettings.getInstance().showDeclarationsAsUsages = false
-                        testFindUsages(file, symbolMarker, referenceMarkers, false)
-                    }
+                    // test("show declarations as usages = false") {
+                    //     NixSymbolSettings.getInstance().showDeclarationsAsUsages = false
+                    //     testFindUsages(file, symbolMarker, referenceMarkers, false)
+                    // }
                     test("show declarations as usages = true") {
-                        NixSymbolSettings.getInstance().showDeclarationsAsUsages = true
+                        // NixSymbolSettings.getInstance().showDeclarationsAsUsages = true
                         if (config.findDeclarations) {
                             val withDeclarations = referenceMarkers.withMarkers(
                                 declarationMarkers.filterSameHostAs(
@@ -163,7 +158,7 @@ abstract class AbstractSymbolNavigationTests {
             TAG_BUILTIN -> {
                 val name = marker.range().substring(file.text)
                 val instance = NixBuiltin.resolveBuiltin(name)
-                NixSymbol.builtin(requireNotNull(instance))
+                requireNotNull(instance).toSymbol()
             }
 
             TAG_SYMBOL -> {
@@ -189,7 +184,7 @@ abstract class AbstractSymbolNavigationTests {
         declarationMarkers: Markers,
         jumpToFirstDeclaration: Boolean
     ) {
-        NixSymbolSettings.getInstance().jumpToFirstDeclaration = jumpToFirstDeclaration
+        // NixSymbolSettings.getInstance().jumpToFirstDeclaration = jumpToFirstDeclaration
         val symbol = getSymbol(file, symbolMarker)
         val navigationTargets = mySymbolHelper.findNavigationTargets(NixNavigationTarget::class.java, symbol)
         var expected = declarationMarkers

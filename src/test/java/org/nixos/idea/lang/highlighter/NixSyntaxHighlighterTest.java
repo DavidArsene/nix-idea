@@ -24,7 +24,7 @@ final class NixSyntaxHighlighterTest {
 
     @Test
     void testAttributesKeysForUnknownTokenType() {
-        TextAttributesKey[] tokenHighlights = new NixSyntaxHighlighter().getTokenHighlights(TokenType.CODE_FRAGMENT);
+        TextAttributesKey[] tokenHighlights = NixSyntaxHighlighter.INSTANCE.getTokenHighlights(TokenType.CODE_FRAGMENT);
         assertNotNull(tokenHighlights, "tokenHighlights");
         assertEquals(0, tokenHighlights.length, "tokenHighlights.length");
     }
@@ -32,7 +32,7 @@ final class NixSyntaxHighlighterTest {
     @ParameterizedTest
     @MethodSource
     void testAttributesKeysForKnownTokenTypes(@NotNull IElementType tokenType) {
-        TextAttributesKey[] tokenHighlights = new NixSyntaxHighlighter().getTokenHighlights(tokenType);
+        TextAttributesKey[] tokenHighlights = NixSyntaxHighlighter.INSTANCE.getTokenHighlights(tokenType);
         assertNotNull(tokenHighlights, "tokenHighlights");
         assertNotEquals(0, tokenHighlights.length, "tokenHighlights.length");
         assertAll(IntStream.range(0, tokenHighlights.length).mapToObj(index ->

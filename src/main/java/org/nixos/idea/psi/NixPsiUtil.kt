@@ -40,37 +40,39 @@ object NixPsiUtil {
         return expressions.subList(1, expressions.size)
     }
 
-    /**
-     * Returns the static name of an attribute.
-     * Is `null` for dynamic attributes.
-     *
-     * @param attr the attribute
-     * @return the name of the attribute or `null`
-     */
-    fun getAttributeName(attr: NixAttr): String? = when (attr) {
-        is NixStdAttrImpl -> attr.text
+	/**
+	 * Returns the static name of an attribute.
+	 * Is `null` for dynamic attributes.
+	 *
+	 * @param attr the attribute
+	 * @return the name of the attribute or `null`
+	 */
+	@JvmStatic
+	fun getAttributeName(attr: NixAttr): String? = when (attr) {
+		is NixStdAttrImpl -> attr.text
 
-        is NixStringAttrImpl -> {
-            val string = attr.stdString
-            val stringParts = string?.getStringParts() ?: return null
-            if (stringParts.size != 1)
-                return null
+		is NixStringAttrImpl -> {
+			val string = attr.stdString
+			val stringParts = string?.getStringParts() ?: return null
+			if (stringParts.size != 1)
+				return null
 
-            parse(stringParts[0] as? NixStringText ?: return null)
-        }
+			parse(stringParts[0] as? NixStringText ?: return null)
+		}
 
-        else -> {
-            LOG.error("Unexpected NixAttr implementation: " + attr.javaClass)
-            null
-        }
+		else -> {
+			LOG.error("Unexpected NixAttr implementation: " + attr.javaClass)
+			null
+		}
 
-    }
+	}
 
-    fun isDeclaration(identifier: NixIdentifier) = when (identifier) {
-        is NixParameterName -> true
-        is NixAttr -> isDeclaration(identifier as NixAttr)
-        else -> false
-    }
+	@JvmStatic
+	fun isDeclaration(identifier: NixIdentifier) = when (identifier) {
+		is NixParameterName -> true
+		is NixAttr -> isDeclaration(identifier as NixAttr)
+		else -> false
+	}
 
     fun isDeclaration(attr: NixAttr): Boolean {
         val attrPath = attr.parent as? NixAttrPath ?: return false

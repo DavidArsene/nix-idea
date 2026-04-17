@@ -10,35 +10,43 @@ import org.nixos.idea.file.NixFileType
 import java.util.*
 
 object NixElementFactory {
+	@JvmStatic
 	fun createString(project: Project, code: String): NixString {
 		return createElement(project, NixString::class.java, "", code, "")
 	}
 
+	@JvmStatic
 	fun createStdStringText(project: Project, code: String): NixStringText {
 		return createElement(project, NixStringText::class.java, "\"", code, "\"")
 	}
 
+	@JvmStatic
 	fun createIndStringText(project: Project, code: String): NixStringText {
 		return createElement(project, NixStringText::class.java, "''\n", code, "''")
 	}
 
+	@JvmStatic
 	fun createAttr(project: Project, code: String): NixAttr {
 		return createElement(project, NixAttr::class.java, "x.", code, "")
 	}
 
+	@JvmStatic
 	fun createAttrPath(project: Project, code: String): NixAttrPath {
 		return createElement(project, NixAttrPath::class.java, "x.", code, "")
 	}
 
+	@JvmStatic
 	fun createBind(project: Project, code: String): NixBind {
 		return createElement(project, NixBind::class.java, "{", code, "}")
 	}
 
+	@JvmStatic
 	@Suppress("UNCHECKED_CAST")
 	fun <T : NixExpr> createExpr(project: Project, code: String): T {
 		return createElement(project, NixExpr::class.java, "", code, "") as T
 	}
 
+	@JvmStatic
 	fun <T : NixPsiElement?> createElement(
 		project: Project, type: Class<T>,
 		prefix: String, text: String, suffix: String
