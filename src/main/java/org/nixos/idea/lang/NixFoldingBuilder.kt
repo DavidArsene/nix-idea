@@ -1,132 +1,154 @@
 package org.nixos.idea.lang
 
 import com.intellij.lang.ASTNode
-import com.intellij.lang.folding.FoldingBuilderEx
+import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.util.containers.toArray
-import org.nixos.idea.psi.NixBindAttr
+import com.intellij.psi.PsiWhiteSpace
+import org.nixos.idea.psi.NixAntiquotation
+import org.nixos.idea.psi.NixBindInherit
 import org.nixos.idea.psi.NixElementVisitor
-import org.nixos.idea.psi.NixExprApp
-import org.nixos.idea.psi.NixExprAssert
 import org.nixos.idea.psi.NixExprAttrs
-import org.nixos.idea.psi.NixExprIf
-import org.nixos.idea.psi.NixExprLambda
 import org.nixos.idea.psi.NixExprLet
 import org.nixos.idea.psi.NixExprList
-import org.nixos.idea.psi.NixExprOpConcat
-import org.nixos.idea.psi.NixExprOpUpdate
 import org.nixos.idea.psi.NixExprParens
-import org.nixos.idea.psi.NixExprSelect
-import org.nixos.idea.psi.NixExprWith
-import org.nixos.idea.psi.NixFormal
 import org.nixos.idea.psi.NixFormals
-import org.nixos.idea.psi.NixIndString
+import org.nixos.idea.psi.NixString
 import org.nixos.idea.psi.NixTypes
 
-internal class NixFoldingBuilder : FoldingBuilderEx() {
-    override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        val descriptors = mutableListOf<FoldingDescriptor>()
-
+class NixFoldingBuilder : CustomFoldingBuilder() {
+    override fun buildLanguageFoldRegions(
+        descriptors: MutableList<FoldingDescriptor>,
+        root: PsiElement,
+        document: Document,
+        quick: Boolean
+    ) {
         root.accept(object : NixElementVisitor<Unit>() {
-            override fun visitExprAttrs(o: NixExprAttrs) {
-                o.acceptChildren(this)
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-                o.bindList.forEach { it.accept(this) }
+            override fun visitElement(o: PsiElement) {
+                super.visitElement(o)
+                return o.acceptChildren(this)
             }
 
-            override fun visitBindAttr(o: NixBindAttr) {
-                o.expr?.accept(this)
+            override fun visitExprAttrs(o: NixExprAttrs) {
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "{ ... }"))
+                super.visitExprAttrs(o)
             }
 
             override fun visitExprParens(o: NixExprParens) {
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-                o.expr?.accept(this)
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "( ... )"))
+                super.visitExprParens(o)
             }
 
-            override fun visitExprWith(o: NixExprWith) {
-                o.exprList.forEach { it.accept(this) }
+            override fun visitString(o: NixString) {
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "\" ... \""))
+                super.visitString(o)
             }
 
-            override fun visitExprApp(o: NixExprApp) {
-                o.exprList.forEach { it.accept(this) }
-            }
-
-            override fun visitExprIf(o: NixExprIf) {
-                o.acceptChildren(this)
-            }
-
-            override fun visitExprAssert(o: NixExprAssert) {
-                o.exprList.forEach { it.accept(this) }
-            }
-
-            override fun visitIndString(o: NixIndString) {
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-            }
-
-            override fun visitExprOpUpdate(o: NixExprOpUpdate) {
-                o.acceptChildren(this)
-            }
-
-            override fun visitExprOpConcat(o: NixExprOpConcat) {
-                o.acceptChildren(this)
+            override fun visitAntiquotation(o: NixAntiquotation) {
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "\${ ... }"))
+                return super.visitAntiquotation(o)
             }
 
             override fun visitExprList(o: NixExprList) {
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-                o.items.forEach { it.accept(this) }
-            }
-
-            override fun visitExprSelect(o: NixExprSelect) {
-                o.acceptChildren(this)
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "[ ... ]"))
+                super.visitExprList(o)
             }
 
             override fun visitExprLet(o: NixExprLet) {
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-                o.bindList.forEach { it.accept(this) }
-                o.expr?.accept(this)
+                if (o.bindList.isNotEmpty()) {
+                    val last = o.bindList.last()
+                    descriptors.add(
+                        FoldingDescriptor(
+                            o.node,
+                            TextRange(
+                                o.node.firstChildNode.textRange.endOffset, /* Start folding after the keyword */
+                                last.textRange.endOffset /* Stop folding before the in */
+                            ),
+                            null,
+                            " ... ",
+                        )
+                    )
+                }
+                super.visitExprLet(o)
+            }
+
+            override fun visitBindInherit(o: NixBindInherit) {
+                if (o.attributes.isNotEmpty()) {
+                    val placeholderText = if (o.source == null) {" ... "} else {" (${o.source!!.node.text}) ... "}
+                    descriptors.add(
+                        FoldingDescriptor(
+                            o.node,
+                            TextRange(
+                                o.node.firstChildNode.textRange.endOffset,  /* Start folding after the keyword */
+                                o.textRange.endOffset - 1 /* don't fold the semicolon */
+                            ),
+                            null,
+                            placeholderText
+                        )
+                    )
+                }
+                super.visitBindInherit(o)
             }
 
             override fun visitFormals(o: NixFormals) {
-                descriptors.add(FoldingDescriptor(o, o.textRange))
-                o.formalList.forEach { it.accept(this) }
+                descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "{ ... }"))
+                super.visitFormals(o)
             }
 
-            override fun visitComment(comment: PsiComment) {
-                descriptors.add(FoldingDescriptor(comment, comment.textRange))
+            override fun visitComment(o: PsiComment) {
+                if (o.tokenType == NixTypes.MCOMMENT) {
+                    descriptors.add(FoldingDescriptor(o.node, o.textRange, null, "/* ... */"))
+                }
+
+                if (o.tokenType == NixTypes.SCOMMENT && findNextAdjacentSComment( o, { it.prevSibling }) == null ) {
+                    val end = findLastSComment(o, { it.nextSibling })
+                    if (end != o) {
+                        descriptors.add(
+                            FoldingDescriptor(
+                                o.node,
+                                TextRange(o.textRange.startOffset, end.textRange.endOffset),
+                                null,
+                                "# ...",
+                            )
+                        )
+                    }
+                }
+
+                super.visitComment(o)
             }
 
-            override fun visitFormal(o: NixFormal) {
-                o.expr?.accept(this)
+            private fun findNextAdjacentSComment(o: PsiComment, nextFn: (PsiElement) -> PsiElement?): PsiComment? {
+                val ws = nextFn(o) ?: return null
+                if (ws is PsiWhiteSpace && ws.text.count { it == '\n' } > 1) {
+                    return null
+                }
+
+                val next = nextFn(ws)
+                return if (next is PsiComment && next.tokenType == NixTypes.SCOMMENT) {
+                    next
+                } else {
+                    null
+                }
             }
 
-            override fun visitExprLambda(o: NixExprLambda) {
-                o.expr?.accept(this)
-                o.formals?.accept(this)
+            private fun findLastSComment(o: PsiComment, nextFn: (PsiElement) -> PsiElement?): PsiComment {
+                var result = o;
+                while (true) {
+                    result = findNextAdjacentSComment(result, nextFn) ?: return result
+                }
             }
 
-            override fun visitFile(file: PsiFile) {
-                super.visitFile(file)
-                file.acceptChildren(this)
-            }
         })
-
-        return descriptors.toArray(FoldingDescriptor.EMPTY_ARRAY)
     }
 
-    override fun getPlaceholderText(node: ASTNode): String? =
-        when (node.elementType) {
-            NixTypes.EXPR_PARENS -> "(...)"
-            NixTypes.MCOMMENT -> "/* ... */"
-            NixTypes.EXPR_ATTRS -> "{ ... }"
-            NixTypes.EXPR_LIST -> "[ ... ]"
-            NixTypes.IND_STRING -> "'' ... ''"
-            NixTypes.FORMALS -> "{ ... }"
-            else -> null
-        }
+    override fun getLanguagePlaceholderText(node: ASTNode, textRange: TextRange): String? {
+        return null
+    }
 
-    override fun isCollapsedByDefault(node: ASTNode): Boolean = false
+    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean {
+        return false
+    }
 }

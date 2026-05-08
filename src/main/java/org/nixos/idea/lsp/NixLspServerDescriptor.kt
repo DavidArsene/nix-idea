@@ -1,20 +1,53 @@
 package org.nixos.idea.lsp
 
+import com.google.gson.JsonObject
+import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.ide.BrowserUtil
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.LspServer
 import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
+import com.intellij.platform.lsp.api.customization.LspCodeActionsSupport
+import com.intellij.platform.lsp.api.customization.LspCustomization
+import com.intellij.platform.lsp.api.customization.LspIntentionAction
+import com.intellij.psi.PsiFile
 import com.intellij.util.execution.ParametersListUtil
+import org.eclipse.lsp4j.CodeAction
+import org.eclipse.lsp4j.WorkspaceEdit
 import org.nixos.idea.file.NixFileType
 
 internal class NixLspServerDescriptor(project: Project) :
     ProjectWideLspServerDescriptor(project, "Nix") {
     private val myCommand: String = "nixd" // FIXME:
 
+    @Throws(ExecutionException::class)
     override fun createCommandLine(): GeneralCommandLine {
         val argv = ParametersListUtil.parse(myCommand, false, true)
         return GeneralCommandLine(argv)
     }
 
     override fun isSupportedFile(file: VirtualFile) = file.fileType === NixFileType
+
+    override val lspCustomization: LspCustomization = object : LspCustomization() {
+        override val codeActionsCustomizer = object : LspCodeActionsSupport() {
+            private fun getNoogleUrl(codeAction: CodeAction): String? =
+                (codeAction.data as? JsonObject)?.get("noogleUrl")?.asString
+
+            override fun createIntentionAction(lspServer: LspServer, codeAction: CodeAction): LspIntentionAction? {
+                if (getNoogleUrl(codeAction) != null) {
+                    /* set an empty edit to prevent the IDE from calling
+                       the LSP server and automatically opening the url */
+                    codeAction.edit = WorkspaceEdit()
+                    return object : LspIntentionAction(lspServer, codeAction) {
+                        override fun invoke(project: Project, editor: Editor, psiFile: PsiFile) {
+                            BrowserUtil.open(getNoogleUrl(codeAction)!!)
+                        }
+                    }
+                }
+                return super.createIntentionAction(lspServer, codeAction)
+            }
+        }
+    }
 }

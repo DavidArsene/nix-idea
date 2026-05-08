@@ -4,11 +4,31 @@
 
 ### Added
 
-- Language Server support using IDEA's LSP API now available without ultimate subscription
-
 ### Changed
 
 ### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.4.0.20] - 2026-05-04
+
+### Added
+
+- Code folding for various expressions ([#99](https://github.com/NixOS/nix-idea/pull/99))
+
+### Fixed
+
+- Unprompted opening of noogle.dev when using `nixd` as language server ([#98](https://github.com/NixOS/nix-idea/issues/98), [#100](https://github.com/NixOS/nix-idea/pull/100))
+
+## [0.4.0.19] - 2026-04-19
+
+### Added
+
+- Language Server support using IDEA's LSP API now available without ultimate subscription
 
 ### Removed
 
@@ -16,7 +36,7 @@
 
 ### Fixed
 
-### Security
+- Freezing UI caused by performance bug in parser ([#95](https://github.com/NixOS/nix-idea/issues/95))
 
 ## [0.4.0.18] - 2025-07-04
 
@@ -281,28 +301,30 @@ the plugin.
 
 - Update project to build for recent IJ versions
 
-[Unreleased]: https://github.com/NixOS/nix-idea/compare/v0.4.0.18...HEAD
-[0.3.0.0]: https://github.com/NixOS/nix-idea/commits/v0.3.0.0
-[0.3.0.3]: https://github.com/NixOS/nix-idea/compare/v0.3.0.0...v0.3.0.3
-[0.3.0.4]: https://github.com/NixOS/nix-idea/compare/v0.3.0.3...v0.3.0.4
-[0.3.0.5]: https://github.com/NixOS/nix-idea/compare/v0.3.0.4...v0.3.0.5
-[0.3.0.6]: https://github.com/NixOS/nix-idea/compare/v0.3.0.5...v0.3.0.6
-[0.4.0.0]: https://github.com/NixOS/nix-idea/compare/v0.3.0.6...v0.4.0.0
-[0.4.0.1]: https://github.com/NixOS/nix-idea/compare/v0.4.0.0...v0.4.0.1
-[0.4.0.10]: https://github.com/NixOS/nix-idea/compare/v0.4.0.9...v0.4.0.10
-[0.4.0.11]: https://github.com/NixOS/nix-idea/compare/v0.4.0.10...v0.4.0.11
-[0.4.0.12]: https://github.com/NixOS/nix-idea/compare/v0.4.0.11...v0.4.0.12
-[0.4.0.13]: https://github.com/NixOS/nix-idea/compare/v0.4.0.12...v0.4.0.13
-[0.4.0.14]: https://github.com/NixOS/nix-idea/compare/v0.4.0.13...v0.4.0.14
-[0.4.0.15]: https://github.com/NixOS/nix-idea/compare/v0.4.0.14...v0.4.0.15
-[0.4.0.16]: https://github.com/NixOS/nix-idea/compare/v0.4.0.15...v0.4.0.16
-[0.4.0.17]: https://github.com/NixOS/nix-idea/compare/v0.4.0.16...v0.4.0.17
-[0.4.0.18]: https://github.com/NixOS/nix-idea/compare/v0.4.0.17...v0.4.0.18
-[0.4.0.2]: https://github.com/NixOS/nix-idea/compare/v0.4.0.1...v0.4.0.2
-[0.4.0.3]: https://github.com/NixOS/nix-idea/compare/v0.4.0.2...v0.4.0.3
-[0.4.0.4]: https://github.com/NixOS/nix-idea/compare/v0.4.0.3...v0.4.0.4
-[0.4.0.5]: https://github.com/NixOS/nix-idea/compare/v0.4.0.4...v0.4.0.5
-[0.4.0.6]: https://github.com/NixOS/nix-idea/compare/v0.4.0.5...v0.4.0.6
-[0.4.0.7]: https://github.com/NixOS/nix-idea/compare/v0.4.0.6...v0.4.0.7
-[0.4.0.8]: https://github.com/NixOS/nix-idea/compare/v0.4.0.7...v0.4.0.8
+[Unreleased]: https://github.com/NixOS/nix-idea/compare/v0.4.0.20...HEAD
 [0.4.0.9]: https://github.com/NixOS/nix-idea/compare/v0.4.0.8...v0.4.0.9
+[0.4.0.8]: https://github.com/NixOS/nix-idea/compare/v0.4.0.7...v0.4.0.8
+[0.4.0.7]: https://github.com/NixOS/nix-idea/compare/v0.4.0.6...v0.4.0.7
+[0.4.0.6]: https://github.com/NixOS/nix-idea/compare/v0.4.0.5...v0.4.0.6
+[0.4.0.5]: https://github.com/NixOS/nix-idea/compare/v0.4.0.4...v0.4.0.5
+[0.4.0.4]: https://github.com/NixOS/nix-idea/compare/v0.4.0.3...v0.4.0.4
+[0.4.0.3]: https://github.com/NixOS/nix-idea/compare/v0.4.0.2...v0.4.0.3
+[0.4.0.20]: https://github.com/NixOS/nix-idea/compare/v0.4.0.19...v0.4.0.20
+[0.4.0.2]: https://github.com/NixOS/nix-idea/compare/v0.4.0.1...v0.4.0.2
+[0.4.0.19]: https://github.com/NixOS/nix-idea/compare/v0.4.0.18...v0.4.0.19
+[0.4.0.18]: https://github.com/NixOS/nix-idea/compare/v0.4.0.17...v0.4.0.18
+[0.4.0.17]: https://github.com/NixOS/nix-idea/compare/v0.4.0.16...v0.4.0.17
+[0.4.0.16]: https://github.com/NixOS/nix-idea/compare/v0.4.0.15...v0.4.0.16
+[0.4.0.15]: https://github.com/NixOS/nix-idea/compare/v0.4.0.14...v0.4.0.15
+[0.4.0.14]: https://github.com/NixOS/nix-idea/compare/v0.4.0.13...v0.4.0.14
+[0.4.0.13]: https://github.com/NixOS/nix-idea/compare/v0.4.0.12...v0.4.0.13
+[0.4.0.12]: https://github.com/NixOS/nix-idea/compare/v0.4.0.11...v0.4.0.12
+[0.4.0.11]: https://github.com/NixOS/nix-idea/compare/v0.4.0.10...v0.4.0.11
+[0.4.0.10]: https://github.com/NixOS/nix-idea/compare/v0.4.0.9...v0.4.0.10
+[0.4.0.1]: https://github.com/NixOS/nix-idea/compare/v0.4.0.0...v0.4.0.1
+[0.4.0.0]: https://github.com/NixOS/nix-idea/compare/v0.3.0.6...v0.4.0.0
+[0.3.0.6]: https://github.com/NixOS/nix-idea/compare/v0.3.0.5...v0.3.0.6
+[0.3.0.5]: https://github.com/NixOS/nix-idea/compare/v0.3.0.4...v0.3.0.5
+[0.3.0.4]: https://github.com/NixOS/nix-idea/compare/v0.3.0.3...v0.3.0.4
+[0.3.0.3]: https://github.com/NixOS/nix-idea/compare/v0.3.0.0...v0.3.0.3
+[0.3.0.0]: https://github.com/NixOS/nix-idea/commits/v0.3.0.0
